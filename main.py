@@ -27,7 +27,7 @@ def get_package_names() -> dict:
 
     apk_packages = {}
 
-    #get all apks from folder
+    # get all apks from folder
     apk_file_names = [f for f in os.listdir(apk_path) if isfile(join(apk_path, f))]
     for apk in apk_file_names:
         if apk.__eq__('tests.yml'):
@@ -35,25 +35,27 @@ def get_package_names() -> dict:
 
         apk_packages[apk] = 'Error'
 
-        #get all currently installed packages
-        installed_before = subprocess.check_output([adb_path, 'shell', 'pm', 'list', 'packages', '-f']).decode('utf-8').split('\n')
+        # get all currently installed packages
+        installed_before = subprocess.check_output([adb_path, 'shell', 'pm', 'list', 'packages', '-f']).decode(
+            'utf-8').split('\n')
 
-        #install apk
+        # install apk
         print(f'Getting package name from {apk}')
         ret = subprocess.check_output([adb_path, 'install', '{}\\{}'.format(apk_path, apk)]).decode('utf-8')
         if 'Success' in ret:
             print('Successfully installed')
 
-            installed_after = subprocess.check_output([adb_path, 'shell', 'pm', 'list', 'packages', '-f']).decode('utf-8').split('\n')
-            #compare installed packages to get the new one
+            installed_after = subprocess.check_output([adb_path, 'shell', 'pm', 'list', 'packages', '-f']).decode(
+                'utf-8').split('\n')
+            # compare installed packages to get the new one
             package_name = [pack for pack in installed_after if pack not in installed_before]
 
             if len(package_name) == 1:
-                #get the name
+                # get the name
                 package_name = package_name[0].split('base.apk=')[1].rstrip()
                 print(f'Package name is: {package_name}')
 
-                #uninstall package
+                # uninstall package
                 ret = subprocess.check_output([adb_path, 'uninstall', package_name]).decode('utf-8')
                 if 'Success' in ret:
                     print('Sucessfully uninstalled')
@@ -70,7 +72,8 @@ def get_package_names() -> dict:
     kill_emulator()
     return apk_packages
 
-def create_device(method : str) -> None:
+
+def create_device(method: str) -> None:
     r"""
     Uses the avdmanager to create and AVD
     Needs method to determin correct Android Version
@@ -78,7 +81,7 @@ def create_device(method : str) -> None:
     :return: None
     """
 
-    #Determin Android version
+    # Determin Android version
     api = -1
     if method.__eq__('exerciserMonkey') or method.__eq__('package_names'):
         api = 31
@@ -90,17 +93,18 @@ def create_device(method : str) -> None:
         print(f'This method is unknown ({method})')
         exit(1)
 
-    #Create command
+    # Create command
     create_command = [avdmanager_path, '--verbose', 'create', 'avd', '--name', 'Android', '--package',
                       f'system-images;android-{api};default;x86_64', '--force']
 
     try:
-        #Run command (create Android Virtual Device)
+        # Run command (create Android Virtual Device)
         p = subprocess.Popen(create_command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         output = p.communicate(input='no'.encode())[0]
     except:
         print(f'You need to install API {api}')
-        print(f'Try: 1. sdkmanager "platform-tools" "platforms;android-{api}"\n2. sdkmanager "system-images;android-{api};default;x86_64"\n 3. sdkmanager --licenses')
+        print(
+            f'Try: 1. sdkmanager "platform-tools" "platforms;android-{api}"\n2. sdkmanager "system-images;android-{api};default;x86_64"\n 3. sdkmanager --licenses')
 
 
 def start_emulator() -> None:
@@ -110,10 +114,12 @@ def start_emulator() -> None:
     """
 
     check = threading.Condition()
-    #Android Device is started on different thread so the main execution of the python programm can wait for its bootup
+
+    # Android Device is started on different thread so the main execution of the python programm can wait for its bootup
     def inner_funct():
 
-        start_command = [emulator_path, '-writable-system', '-avd', 'Android', '-log-nofilter', '-dns-server', '192.168.178.50']
+        start_command = [emulator_path, '-writable-system', '-avd', 'Android', '-log-nofilter', '-dns-server',
+                         '192.168.178.50']
         p = subprocess.Popen(start_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
         print('Waiting for emulator bootup')
@@ -123,14 +129,14 @@ def start_emulator() -> None:
                 print('Actual Booted (No timeout)')
                 check.acquire()
                 check.notify()
-                #Notify, when Emulator is booted up
+                # Notify, when Emulator is booted up
                 check.release()
 
     t = threading.Thread(target=inner_funct, name='starting emulator')
     t.daemon = True
     t.start()
 
-    #Wait till thread notifies or 40 seconds have passed
+    # Wait till thread notifies or 40 seconds have passed
     check.acquire()
     check.wait(timeout=40)
     print('Emulator is booted up')
@@ -143,27 +149,26 @@ def kill_emulator() -> None:
     :return: None
     """
 
-    #Kill emulator
+    # Kill emulator
     time.sleep(2)
     try:
         subprocess.call([adb_path, '-s', 'emulator-5554', 'emu', 'kill'])
     except Exception as e:
         print(f'Emulator already dead: {e}')
 
-    #Delete virtual device
+    # Delete virtual device
     time.sleep(2)
     try:
         subprocess.call([avdmanager_path, 'delete', 'avd', '-n', 'Android'])
     except Exception as e:
         print(f'ini file already deleted: {e}')
 
-    #Delete all files that are left
+    # Delete all files that are left
     time.sleep(5)
     try:
         shutil.rmtree(avd_path, ignore_errors=True)
     except Exception as e:
         print(f'Cant delete folder: {e}')
-
 
 
 def emulator_is_running() -> bool:
@@ -180,7 +185,8 @@ def emulator_is_running() -> bool:
     except:
         return False
 
-def exerciserMonkey(name : str, package : str) -> None:
+
+def exerciserMonkey(name: str, package: str) -> None:
     r"""
     Runns the ExerciserMonkey
     :param name: Name of the APK
@@ -188,17 +194,18 @@ def exerciserMonkey(name : str, package : str) -> None:
     :return: None
     """
 
-    #Install APK on system
+    # Install APK on system
 
     print(f'Installing APK')
     install_command = [adb_path, 'install', f'{apk_path}\\{name}.apk']
     subprocess.check_call(install_command, shell=True)
 
-    monkey_command = [adb_path, 'shell', 'monkey', '-p', package, '-v', '1000', '--throttle', '1000', '--ignore-crashes', '-v']
+    monkey_command = [adb_path, 'shell', 'monkey', '-p', package, '-v', '1000', '--throttle', '1000',
+                      '--ignore-crashes', '-v']
 
-    #Start monkey with 1000 events for 10 times
-    for _ in range(0,10):
-        #check if emulator is still running
+    # Start monkey with 1000 events for 10 times
+    for _ in range(0, 10):
+        # check if emulator is still running
         if not emulator_is_running():
             time.sleep(3)
             start_emulator()
@@ -208,7 +215,7 @@ def exerciserMonkey(name : str, package : str) -> None:
             print(f'App crashed :( {e}')
 
 
-def droidBot(name : str) -> None:
+def droidBot(name: str) -> None:
     r"""
     Runns the DroidBot
     :param name: Name of the APK
@@ -221,11 +228,11 @@ def droidBot(name : str) -> None:
                         'memory_guided', '-is_emulator', '-grant_perm', '-random', '-count', '40',
                         '-accessibility_auto']
     try:
-        #Start DroidBot
+        # Start DroidBot
         print('Starting DroidBot')
         droidbot_process = subprocess.check_call(droidbot_command, shell=True)
 
-        #Print DroidBot Output
+        # Print DroidBot Output
         for line in droidbot_process.stdout:
             line = line.decode('utf-8')
             print(line)
@@ -233,7 +240,7 @@ def droidBot(name : str) -> None:
         print(f'App crashed :( {e}')
 
 
-def curiousMonkey(name : str, package : str) -> None:
+def curiousMonkey(name: str, package: str) -> None:
     r"""
     Runns the curiousMonkey
     :param name: Name of the APK
@@ -241,33 +248,37 @@ def curiousMonkey(name : str, package : str) -> None:
     :return: None
     """
 
-    #Install APK on system
+    # Install APK on system
     print('Installing APK')
     install_command = [adb_path, 'install', f'{apk_path}\\{name}.apk']
     subprocess.check_call(install_command, shell=True)
 
     anti_vm_files = ['bbuild.prop', 'ccpuinfo', 'ddrivers', 'ttcp', 'hookset.json']
     try:
-        #Upload required files
+        # Upload required files
         for file in anti_vm_files:
-            file_command = [adb_path, 'push', f'{curiousMonkey_path}\\Anti-Vm\\{file}','/data/local/tmp']
+            file_command = [adb_path, 'push', f'{curiousMonkey_path}\\Anti-Vm\\{file}', '/data/local/tmp']
             subprocess.check_call(file_command, shell=True)
 
     except Exception as e:
         print(f'Cant push anti-vm files - {e}')
 
-    curiousMonkey_command = ['java', '-classpath', f'{curiousMonkey_path}\\Curious-Monkey\\out\\production\\Curious-Monkey', 'com.android.Main.Main']
+    curiousMonkey_command = ['java', '-classpath',
+                             f'{curiousMonkey_path}\\Curious-Monkey\\out\\production\\Curious-Monkey',
+                             'com.android.Main.Main']
     try:
-        #Run CuriousMonkey
+        # Run CuriousMonkey
         print('Starting Curious Monkey')
-        curiousMonkey_process = subprocess.Popen(curiousMonkey_command,  stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE, shell=True)
+        curiousMonkey_process = subprocess.Popen(curiousMonkey_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                                 stdin=subprocess.PIPE, shell=True)
         out, err = curiousMonkey_process.communicate(input=f'{package}'.encode())
 
 
     except Exception as e:
         print(f'Something crashed - {e}')
 
-def check_execution(method : str, name : str) -> str:
+
+def check_execution(method: str, name: str) -> str:
     r"""
     Check weather the implemented trigger is executed or not
     :param method: Currently tested Method
@@ -279,13 +290,13 @@ def check_execution(method : str, name : str) -> str:
         time.sleep(3)
         start_emulator()
 
-    #create method output path if nessesary
+    # create method output path if nessesary
     if not os.path.isdir(f'{output_path}\\{method}'):
         print(f'create {method} folder')
         path = os.path.join(output_path, method)
         os.mkdir(path)
 
-    #create trigger output path if nessesary
+    # create trigger output path if nessesary
     if not os.path.isdir(f'{output_path}\\{method}\\{name}'):
         print(f'create {name} folder')
         path = os.path.join(f'{output_path}\\{method}', name)
@@ -300,7 +311,7 @@ def check_execution(method : str, name : str) -> str:
             line = line.decode('utf-8')
             line = line.strip()
 
-            #Normalize the Log-Output (Android 5)
+            # Normalize the Log-Output (Android 5)
             pattern = r'[0-9]|[()]'
             line = re.sub(pattern, '', line)
             line = line.replace('/', ' ')
@@ -309,11 +320,12 @@ def check_execution(method : str, name : str) -> str:
             output_file.write(f'{line}\n')
 
     except Exception as e:
-        #start emulator if it is not running
+        # start emulator if it is not running
         start_emulator()
         subprocess.check_call(createlog, shell=True)
 
-    check_command = ['python2', check_path, '-t', test_yml_path, '-l', f'{output_path}\\{method}\\{name}\\tmplog.log', name]
+    check_command = ['python2', check_path, '-t', test_yml_path, '-l', f'{output_path}\\{method}\\{name}\\tmplog.log',
+                     name]
     p = subprocess.Popen(check_command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
     for line in p.stdout:
@@ -325,7 +337,6 @@ def check_execution(method : str, name : str) -> str:
 
 
 def main():
-
     results = {}
     times = {}
     for method in trigger_methods:
@@ -362,7 +373,7 @@ def main():
                 results[method][name] = f'{triggered} in {time.time() - start_time}'
                 res_df = pd.DataFrame(results)
                 res_df.to_excel(f'{output_path}\\evaluation.xlsx')
-                print(json.dumps(results,sort_keys=True, indent=4))
+                print(json.dumps(results, sort_keys=True, indent=4))
 
                 # kill env
                 kill_emulator()
@@ -371,6 +382,7 @@ def main():
             print(f'Something crashed :( - {e}, {method}, {name}, {package}')
 
     print('Thank you for using my script')
+
 
 if __name__ == "__main__":
 
@@ -419,7 +431,8 @@ if __name__ == "__main__":
         exit(-1)
 
     parser = OptionParser()
-    parser.add_option("-f", "--force", action="store_true", default=False, help="Force program to get new package names")
+    parser.add_option("-f", "--force", action="store_true", default=False,
+                      help="Force program to get new package names")
 
     # get new package names
     (options, args) = parser.parse_args()

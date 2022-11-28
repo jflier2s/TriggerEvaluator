@@ -1,0 +1,6 @@
+--------- beginning of main
+
+11-08 15:05:31.252 13495 13495 D AndroidRuntime: Shutting down VM
+
+11-08 15:05:36.105 10529 10731 I MediaFocusControl:  AudioFocus  abandonAudioFocus() from android.media.AudioManager@3ffee19dcom.android.music.MediaPlaybackService$3@4b21612
+
