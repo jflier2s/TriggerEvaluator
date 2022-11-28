@@ -1,0 +1,243 @@
+-
+  name: installedApps
+  category: AbnormalSetting
+  evasion__sources:
+    - android.content.pm.PackageManager  queryIntentActivities
+  payload: android.telephony.gsm.SmsManager sendTextMessage
+  to_pass:
+    - start
+    - payload
+    - end
+-
+  name: uptime
+  category: AbnormalSetting
+  evasion__sources:
+    - android.os.SystemClock uptimeMillis 
+  payload: android.telephony.gsm.SmsManager sendTextMessage
+  to_pass:
+    - start
+    - payload
+    - end
+-
+  name: adbEnable
+  category: AnalysisDetection
+  evasion__sources:
+    - android.provider.Settings.Global ADB_ENABLED 
+  payload: android.telephony.gsm.SmsManager sendTextMessage
+  to_pass:
+    - start
+    - payload
+    - end
+-
+  name: adbPortDetector
+  category: AnalysisDetection
+  evasion__sources:
+    - "/proc/net/tcp"
+  payload: android.telephony.gsm.SmsManager sendTextMessage
+  to_pass:
+    - start
+    - payload
+    - end
+-
+  name: signatureVerification
+  category: AnalysisDetection
+  evasion__sources:
+    - android.content.pm.PackageManager GET_SIGNATURES
+  payload: android.telephony.gsm.SmsManager sendTextMessage
+  to_pass:
+    - start
+    - payload
+    - end
+-
+  name: constantCalls1
+  category: EmulatorConstants
+  evasion__sources:
+    - android.telephony.TelephonyManager getDeviceId
+    - android.telephony.TelephonyManager getSimSerialNumber
+    - android.telephony.TelephonyManager getSubscriberId
+  payload: android.telephony.gsm.SmsManager sendTextMessage
+  to_pass:
+    - start
+    - payload
+    - end
+-
+  name: constantCalls2
+  category: EmulatorConstants
+  evasion__sources:
+    - android.telephony.TelephonyManager getDeviceId
+    - android.telephony.TelephonyManager getSimSerialNumber
+    - android.telephony.TelephonyManager getSubscriberId
+  payload: android.telephony.gsm.SmsManager sendTextMessage
+  to_pass:
+    - start
+    - payload
+    - end
+-
+  name: constants1
+  category: EmulatorConstants
+  evasion__sources:
+    - android.os.Build MANUFACTURER
+    - android.os.Build SERIAL
+    - android.os.Build BOARD
+    - android.os.Build HARDWARE
+  payload: android.telephony.gsm.SmsManager sendTextMessage
+  to_pass:
+    - start
+    - payload
+    - end
+-
+  name: constants2
+  category: EmulatorConstants
+  evasion__sources:
+    - android.os.Build MODEL
+    - android.os.Build PRODUCT
+    - android.os.Build BRAND
+    - android.os.Build DEVICE
+    - android.os.Build FINGERPRINT
+  payload: android.telephony.gsm.SmsManager sendTextMessage
+  to_pass:
+    - start
+    - payload
+    - end
+-
+  name: qemuFingerprinting
+  category: EmulatorConstants
+  ABI: armeabi-v7a
+  evasion__sources:
+    - java.lang.System loadLibrary
+  payload: android.telephony.gsm.SmsManager sendTextMessage
+  to_pass:
+    - start
+    - payload
+    - end
+-
+  name: network1 
+  category: Network
+  evasion__sources:
+    - android.net.wifi.WifiInfo getIpAddress
+  payload: android.telephony.gsm.SmsManager sendTextMessage
+  to_pass:
+    - start
+    - payload
+    - end
+-
+  name: network2
+  category: Network
+  evasion__sources:
+    - "/proc/net/tcp"
+    - "0F02000A"
+  payload: android.telephony.gsm.SmsManager sendTextMessage
+  to_pass:
+    - start
+    - payload
+    - end
+-
+  name: accelH
+  category: Sensors
+  evasion__sources:
+    - android.hardware.SensorEvent values
+  payload: android.telephony.gsm.SmsManager sendTextMessage
+  to_pass:
+    - start
+    - payload
+-
+  name: batteryStatus
+  category: Sensors
+  evasion__sources:
+    - android.os.BatteryManager BATTERY_STATUS_CHARGING
+    - android.os.BatteryManager EXTRA_STATUS
+    - android.os.BatteryManager BATTERY_STATUS_FULL
+  payload: android.telephony.gsm.SmsManager sendTextMessage
+  to_pass:
+    - start
+    - payload
+-
+  name: postDelayed
+  category: Time
+  evasion__sources:
+    - android.os.Handler postDelayed
+  payload: android.telephony.gsm.SmsManager sendTextMessage
+  to_pass:
+    - start
+    - payload
+-
+  name: sleep
+  category: Time
+  evasion__sources:
+    - android.os.SystemClock sleep
+  payload: android.telephony.gsm.SmsManager sendTextMessage
+  to_pass:
+    - start
+    - payload
+-
+  name: Navigate
+  category: self
+  evasion__sources:
+  
+  payload: android.telephony.gsm.SmsManager sendTextMessage
+  to_pass:
+    - start
+    - payload
+-
+  name: Geolocation
+  category: self
+  evasion__sources:
+  
+  payload: android.telephony.gsm.SmsManager sendTextMessage
+  to_pass:
+    - start
+    - payload
+-
+  name: Language
+  category: self
+  evasion__sources:
+  
+  payload: android.telephony.gsm.SmsManager sendTextMessage
+  to_pass:
+    - start
+    - payload
+-
+  name: LogCredent
+  category: self
+  evasion__sources:
+  
+  payload: android.telephony.gsm.SmsManager sendTextMessage
+  to_pass:
+    - start
+    - payload
+-
+  name: Background
+  category: self
+  evasion__sources:
+  
+  payload: android.telephony.gsm.SmsManager sendTextMessage
+  to_pass:
+    - start
+    - payload
+-
+  name: AccessService
+  category: self
+  evasion__sources:
+  
+  payload: android.telephony.gsm.SmsManager sendTextMessage
+  to_pass:
+    - start
+    - payload
+-
+  name: HashComp
+  category: self
+  evasion__sources:
+
+  payload: android.telephony.gsm.SmsManager sendTextMessage
+  to_pass:
+    - start
+    - payload
+-
+  name: Permission
+  category: self
+  evasion__sources:
+  
+  payload: android.telephony.gsm.SmsManager sendTextMessage
+  to_pass:
+    - start
+    - payload
