@@ -9,14 +9,14 @@
 ───────╚══╩══╝                                  
 ────────────────────────────────────────────
 
-#TriggerEvaluator
+# TriggerEvaluator
 The TriggerEvaluator is a framework to compare trigger-mechanisms.
 A trigger is a condition that determines whether an application behaves maliciously or not.
 A trigger-mechanism is an implemented method to automatically fulfill this condition and activate hidden behaviour.
 
 The _TriggerEvaluator_ was build as part of my Bachelor-Thesis.
 
-#Getting Started
+# Getting Started
 These instructions will get a copy of the project up and running on your local machine for development and testing purposes.
 
 ## Installing
